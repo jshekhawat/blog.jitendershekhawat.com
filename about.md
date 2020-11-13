@@ -20,6 +20,8 @@ I like to tinker around with programming languages and learning new technologies
 
 Given Below is a brief CV of mine.
 
+[^1] This is supposedly a side note.
+
 -----
 
 ## Experience

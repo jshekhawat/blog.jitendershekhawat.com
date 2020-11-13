@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend)
 import           Hakyll
-
+import           Text.Pandoc as Pandoc
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -46,6 +46,7 @@ main = hakyll $ do
     match "notes/*" $ do
         route $ setExtension "html"
         compile $ pandocCompiler
+            >>= loadAndApplyTemplate "templates/note.html" defaultContext
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
