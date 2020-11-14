@@ -2,7 +2,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend)
 import           Hakyll
-import           Text.Pandoc as Pandoc
+import qualified Text.Pandoc as Pandoc
+import           Text.Pandoc.Walk (walk)
+import           Text.Pandoc.SideNote (usingSideNotes)
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -32,7 +34,7 @@ main = hakyll $ do
 
     match (fromList ["about.md"]) $ do
         route   $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocWithShiftHeaders
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
@@ -45,7 +47,7 @@ main = hakyll $ do
     
     match "notes/*" $ do
         route $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocWithShiftHeaders
             >>= loadAndApplyTemplate "templates/note.html" defaultContext
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
@@ -70,7 +72,7 @@ main = hakyll $ do
             notes <- loadAll "notes/*"
             let notesCtx =
                     listField "notes" defaultContext (return notes)
-                    <> defaultContext                    
+                    `mappend` defaultContext                    
             makeItem ""
                 >>= loadAndApplyTemplate "templates/notes.html" notesCtx
                 >>= loadAndApplyTemplate "templates/default.html" notesCtx
@@ -99,3 +101,16 @@ postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`
     defaultContext
+
+-- taken from sulami.github.io
+
+pandocWithShiftHeaders :: Compiler (Item String)
+pandocWithShiftHeaders = pandocCompilerWithTransform
+                            defaultHakyllReaderOptions defaultHakyllWriterOptions
+                            (usingSideNotes . shiftHeaders 1)
+
+shiftHeaders :: Int -> Pandoc.Pandoc -> Pandoc.Pandoc
+shiftHeaders i p = walk go p
+    where 
+        go (Pandoc.Header l a inl) = Pandoc.Header (l + i) a inl
+        go x = x

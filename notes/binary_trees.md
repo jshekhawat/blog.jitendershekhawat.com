@@ -13,7 +13,8 @@ tags: algorithms, data_structures
     - height of tree == height of the root node
 - [Properties]
     - Max number of nodes is:: 
-        - $$2^h - 1$$  
+        - $$2^h - 1$$ 
+        - $$a => bs$$
 
 - **Traversals**
     - Traversal is a process to:: visit all the nodes in a tree
@@ -46,10 +47,15 @@ tags: algorithms, data_structures
             - complexity is:: 
                 - Average Time ?:: $$ O(log_{2} N) $$
                 - Worst case ?:: $$ O(N) $$
-            - Deletion is tricky because ?:: any deletion with a node that is not leaf will cause the creation of a subtree and the tree might need to be rebalanced.
+            - Deletion is tricky because ?:: any deletion with a node that is not leaf will cause the creation of a subtree and the tree might need to be rebalanced.[^1]
+
+        [^1]:
+        This is what it is
 
 - [Code]
+
 ``` haskell
+
                 data BinaryTree a = Leaf |
                     Node (BinaryTree a) a (BinaryTree a)
                         deriving (Show, Eq, Ord)
